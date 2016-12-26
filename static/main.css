@@ -79,14 +79,12 @@ body {
     font-family: arial;
     font-size: 10pt;
     font-style: italic;
-    text-align: right;
+    text-align: left;
     background-color: transparent;
     box-shadow: none;
     color: #565656;
-    margin: 0 6px 6px 48px;
+    margin: 0 6px 6px 54px;
 }
-
-
 
 form {
     position: absolute;

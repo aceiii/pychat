@@ -45,6 +45,12 @@ def gravatar_for_username(username):
     name_hash = md5(username).hexdigest()
     return GRAVATAR_URL % (name_hash,)
 
+def map_user(sid):
+    return {
+        "img": user_prop(sid, "avatar"),
+        "username": user_prop(sid, "name"),
+    }
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -54,20 +60,17 @@ def connect(sid, env):
     print("connected:", sid)
     users[sid] = {"env": env}
 
-@sio.on("chat message")
-def message(sid, data):
-    print("message", sid, data)
-    context = {
-        "img": user_prop(sid, "avatar"),
-        "username": user_prop(sid, "name"),
-        "message": data
-    }
-    sio.emit("chat message", context)
-
 @sio.on("disconnect")
 def disconnect(sid):
     print("User disconnected. Clearing data for user", sid)
     del users[sid]
+
+@sio.on("chat message")
+def message(sid, data):
+    print("message", sid, data)
+    context = map_user(sid)
+    context["message"] = data
+    sio.emit("chat message", context)
 
 @sio.on("client request_name")
 def change_username(sid, new_name):
@@ -84,6 +87,11 @@ def change_username(sid, new_name):
     if new_avatar:
         users[sid]["avatar"] = new_avatar
     sio.emit("server update_name", new_name, sid)
+
+@sio.on("client get_users")
+def get_users(sid):
+    mapped_users = [map_user(sid) for sid in users]
+    sio.emit("server users", mapped_users, sid)
 
 flask_app = app
 app = socketio.Middleware(sio, flask_app)
