@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="static/main.css" />
     <script src="static/socket.io-1.4.5.js"></script>
     <script src="static/jquery-3.1.1.slim.min.js"></script>
+    <script src="static/underscore-min.js"></script>
 </head>
 <body>
     <div id="messages"></div>
@@ -13,6 +14,20 @@
         <input id="input" type="text" />
         <button type="submit" id="send">Send</button>
     </form>
+    <script id="template-chat-message" type="text/x-handlebars-template">
+        <li class="chat-message">
+            <div class="avatar">
+                <img src="<%= img %>">
+            </div>
+            <div class="message">
+                <div class="message-title"><%= username %></div>
+                    <div class="message-body">
+                        <p><%= message %></p>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </script>
     <script src="static/main.js"></script>
 </body>
 </html>
