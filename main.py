@@ -11,7 +11,7 @@ from flask import Flask, render_template
 from random import randint
 from hashlib import md5
 
-GRAVATAR_URL = "http://www.gravatar.com/avatar/%s?s=64&d=identicon&r=PG"
+GRAVATAR_URL = "//www.gravatar.com/avatar/%s?s=64&d=identicon&r=PG"
 
 sio = socketio.Server()
 app = Flask(__name__)
