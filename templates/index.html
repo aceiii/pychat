@@ -9,7 +9,8 @@
     <script src="static/underscore-min.js"></script>
 </head>
 <body>
-    <div id="messages"></div>
+    <ul id="messages"></ul>
+    <ul id="users"></ul>
     <form action="">
         <input id="input" type="text" />
         <button type="submit" id="send">Send</button>
@@ -17,7 +18,7 @@
     <script id="template-chat-message" type="text/x-handlebars-template">
         <li class="chat-message">
             <div class="avatar">
-                <img src="<%= img %>">
+                <img src="<%= avatar %>" />
             </div>
             <div class="message">
                 <div class="message-title"><%= username %></div>
@@ -26,6 +27,14 @@
                     </div>
                 </div>
             </div>
+        </li>
+    </script>
+    <script id="template-user-item" type="text/x-handlebars-template">
+        <li class="user-item">
+            <div class="avatar">
+                <img src="<%= avatar %>" />
+            </div>
+            <label class="user-name"><%= username %></div>
         </li>
     </script>
     <script src="static/main.js"></script>

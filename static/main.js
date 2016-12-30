@@ -1,5 +1,6 @@
 
 var $messages = $("#messages");
+var $users = $("#users");
 var $input = $("#input");
 var $form = $("form");
 
@@ -8,17 +9,31 @@ var user = {};
 
 var templates = {
     chat_message: _.template($("#template-chat-message").html()),
+    user_item: _.template($("#template-user-item").html()),
 };
 
 var commands = {
     "/change_name": function (cmd_args) {
+        if (cmd_args.length != 2) {
+            return false;
+        }
         socket.emit("client request_name", cmd_args[1]);
         return true;
     },
+    "/change_avatar": function (cmd_args) {
+        if (cmd_args.length != 2) {
+            return false;
+        }
+        socket.emit("client request_avatar", cmd_args[1]);
+        return true;
+    },
     "/users": function (cmd_args) {
+        if (cmd_args.length != 1) {
+            return false;
+        }
         socket.emit("client get_users");
         return true;
-    }
+    },
 };
 
 function append_chat_message(context) {
@@ -36,6 +51,14 @@ function clear_input() {
 function scroll_to_last_message() {
     _.defer(function () {
         $messages.scrollTop($messages[0].scrollHeight);
+    });
+}
+
+function recreate_user_list(users) {
+    $users.html("");
+    _.forEach(users, function (user) {
+        console.log(user);
+        $users.append(templates.user_item(user));
     });
 }
 
@@ -78,8 +101,12 @@ $form.submit(function () {
 socket.on("connect", function () {
     console.log("Connected to chat server.");
     append_server_message({ message: "Connected to server." });
-    var name = user.name || "";
-    socket.emit("client request_name", name);
+    var name = user.username || "";
+    if (!name) {
+        socket.emit("client request_guest_profile");
+    } else {
+        socket.emit("client update_profile", user);
+    }
 });
 
 socket.on("disconnect", function () {
@@ -93,13 +120,14 @@ socket.on("chat message", function (context) {
     scroll_to_last_message();
 });
 
-socket.on("server update_name", function (name) {
-    console.log("Setting username to: ", name)
-    append_server_message({ message: "Setting username to: " + name });
-    user.name = name;
+socket.on("server update_profile", function (data) {
+    user = data
+    console.log("Setting username to: ", user.username)
+    append_server_message({ message: "Setting username to: " + user.username });
 });
 
 socket.on("server users", function (users) {
     console.log("Got new list of users:", users);
+    recreate_user_list(users);
 });
 
